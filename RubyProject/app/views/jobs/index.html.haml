@@ -1,0 +1,26 @@
+!!!
+%html
+  %head
+    %h1 Jobs
+
+    %table
+      %thead
+        %tr
+
+      %td= "id"
+      %td= "name"
+      %td= "place"
+      %td= "company_id"
+      %td= "created_at"
+      %td= "updated_at"
+
+      %tbody
+        - @companies.each do |job|
+          %tr
+            %td= job.id
+            %td= job.name
+            %td= job.place
+            %td= job.company_id
+            %td= job.created_at
+            %td= job.updated_at
+    %br

@@ -1,0 +1,40 @@
+services:
+  rdbms:
+    image: postgres
+    command: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: 'whoami'
+    volumes:
+      - ./scripts/:/scripts/
+      - postgres-data:/var/lib/postgresql/data
+    user: postgres # админ-пользователь для postgres
+    ports:
+      - 5432:5432
+
+  web:
+    build:
+      context: ../RubyProject
+      dockerfile: ../docker/ruby/Dockerfile
+    tty: true
+    stdin_open: true
+    command:
+      - /bin/sh
+      - -c
+      - |
+        rm -f /app/tmp/pids/server.pid
+        bundle update
+        bundle exec rails server -b 0.0.0.0 -p 3000
+    volumes:
+      - ../RubyProject:/app
+    environment:
+      RDBMS_HOST: rdbms
+    ports:
+      - "127.0.0.1:3000:3000"
+
+# Для того, чтобы после каждого перезапуска не пересоздавать БД
+# и не перезапускать миграционные скрипты, всё сохраняется в
+# хранилище postgres-data
+volumes:
+  postgres-data:
